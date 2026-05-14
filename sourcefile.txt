@@ -1,0 +1,14 @@
+Commands:
+	convet text to hex
+	-h	<input_text>	<output_hex>
+
+
+Text Input File:
+
+.code.
+ENTRY:
+
+.data.
+
+
+Hex Input File:
