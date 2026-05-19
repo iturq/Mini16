@@ -19,34 +19,36 @@ r1 - r15
 
 INSTRUCTIONS:
 
-0x0 : shr	: B : R1 = R2 >> IM
-0x1 : shl	: B : R1 = R2 << IM
-0x2 : load	: B : R1 = *(R2 + IM)
-0x3 : store	: B : *(R2 + IM) = R1
-0x4 : be	: B : R1 == R2 ? PC = PC + (IM << 1) : PC = PC + 2
-0x5 : bne	: B : R1 != R2 ? PC = PC + (IM << 1) : PC = PC + 2
-0x6 : bg	: B : R1 > R2 ? PC = PC + (IM << 1) : PC = PC + 2
-0x7 : bl	: B : R1 < R2 ? PC = PC + (IM << 1) : PC = PC + 2
-0x8 : jmp	: D : PC = PC + (IM << 1)
-0x- : moh	: C : R1[16:9] = IM
-0x9 : mol	: C : R1[8:0] = IM
+0x0	: shft	: B	: if(IM4 > 0) R1 = R2 << IM4 else R1 = R2 >> IM4
+0x1	: addi	: B	: R1 = R2 + sigext(IM4)
+0x2 : load	: B : R1 = *(R2 + IM4)
+0x3 : store	: B : *(R2 + IM4) = R1
+0x4 : be	: B : R1 == R2 ? PC = PC + IM4 : PC++
+0x5 : bg	: B : R1 > R2 ? PC = PC + IM4 : PC++
+0x6 : bl	: B : R1 < R2 ? PC = PC + IM4 : PC++
+0x7 : jmp	: D : PC = PC + sigext(IM12)
+0x8 : mol	: C : R1[8:0] = IM8
+0x9 : moh	: C : R1[16:9] = IM8
 0xA : add	: A : R1 = R2 + R3
 0xB : sub	: A : R1 = R2 - R3
 0xC : nand	: A : R1 = ~(R2 & R3)
 0xD : nor	: A : R1 = ~(R2 | R3)
 0xE : xor	: A : R1 = R2 ^ R3
-0xF : jal	: A : R1 = PC + 2 , PC = R2, ProcID = R3
+0xF : jal	: A : R1 = PC++ , PC = R2, ProcID = R3
+
+0x- : shr	: B : R1 = R2 >> IM
+0x- : shl	: B : R1 = R2 << IM
+0x- : bne	: B : R1 != R2 ? PC = PC + (IM << 1) : PC = PC + 2
 0x- : jal	: B : R1 = PC + 2 , PC = R2, Signal = IM
 
 MACRO:
-mov : movi R1 IM(16) :
-	mol R1 IM[16:9]
-	shl R1 8
+mov : mov R1 IM(16) :
+	moh R1 IM[16:9]
 	mol R1 IM[8:0]
 
 IMMEDIATE TYPES:
 0x0 : binary	: IM(4) & IM(8)				: b[0-1]*
-0x1 : decimal	: IM(4) & IM(8)				: d[0-9]*
+0x1 : decimal	: IM(4) & IM(8)	& IM(12)	: d(+|-)[0-9]*
 0x2 : hex		: IM(4) & IM(8)				: h[0-9|A-F]*
 0x3 : oct		: IM(4) & IM(8)				: o[0-7]*
 0x4 : char		: IM(8)						: c'[ascii]'
